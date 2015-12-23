@@ -3,7 +3,7 @@ import unittest
 
 class TestGschrootClient(unittest.TestCase):
 	def test_gschroot(self):
-		gs = Gschroot("http://localhost:8000/rootfs.tar", cmd="sleep 3", name = "testing")
+		gs = Gschroot("http://localhost:8000/rootfs.tar", cmd="ls", name = "testing")
 		print gs.get_task_status()
 		print gs.get_task_stdout()
 

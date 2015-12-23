@@ -45,13 +45,11 @@ func main() {
     }
     t, err := gschroot.NewTask(*url, *cmd, *name)
     if err != nil {
-        fmt.Fprintln(os.Stderr, "err", err.Error())
+        //fmt.Fprintln(os.Stderr, "err", err.Error())
         os.Exit(1)
     }
     
     server.Register(t) //so it can be queried
-    err = t.Run()
-    log.Println(err)
-    //t.Close()
+    t.Run()
     server.Close()
 }

@@ -6,6 +6,7 @@ import multiprocessing
 import time
 import os
 import signal
+
 SOCK_DIR = "/tmp/gschroot_socks"
 class Gschroot(object):
 	def __init__(self, url, cmd, name, retries = 3):
@@ -27,19 +28,25 @@ class Gschroot(object):
 
 	def _message(self, method, *params):
 		msg = {"id": str(ObjectId()), "method": method, "params": list(params)}
-		return json.dumps(msg).encode()
+		encoded_msg = json.dumps(msg).encode()
+		self.socket.send(encoded_msg)
+		chunk = self.socket.recv(2048)
+		return chunk
 
 	def get_task_status(self):
-		encoded_msg = self._message("GsServer.GetTaskStatus", {})
-		self.socket.send(encoded_msg)
-		chunk = self.socket.recv(2048)
-		return chunk
+		chunk = self._message("GsServer.GetTaskStatus", {})
+		return json.loads(chunk)
 
 	def get_task_stdout(self):
-		encoded_msg = self._message("GsServer.GetTaskStdLogPath", {})
-		self.socket.send(encoded_msg)
-		chunk = self.socket.recv(2048)
-		return chunk
+		"""returns stdout from command"""
+		#TODO: make it so the whole file doesn't need to get read into memory at once
+		chunk = self._message("GsServer.GetTaskStdLogPath", {})
+		log_path_dict = json.loads(chunk)
+		fname = log_path_dict["result"]["StdoutPath"]
+		with open(fname) as f:
+			contents = f.read()
+		return contents
 
 	def get_task_stderr(self):
+		"""returns stderr from command"""
 		pass

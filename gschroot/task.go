@@ -37,6 +37,7 @@ type TaskStatus struct {
 	Running bool
 	Done bool
 	SignalsRecvd []int
+    Err string
 	TimeStarted time.Time
 }
 
@@ -135,9 +136,11 @@ func (t *Task) Run() (err error) {
     }()
 
     if err = chrootCmd.Wait(); err != nil {
+        t.Ts.Err = err.Error()
         if exiterr, ok := err.(*exec.ExitError); ok {
             if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
                 es := status.ExitStatus() //geTs exit status code
+                //t.Ts.SignalsRecvd = append(t.Ts.SignalsRecvd, es) TODO: make exit status field
                 if es == INVALID_COMMAND_CODE {
                     err = &InvalidCommandError{Msg: "Command is invalid.", Code: INVALID_COMMAND_CODE}
                 }
