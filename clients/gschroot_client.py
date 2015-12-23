@@ -25,16 +25,21 @@ class Gschroot(object):
 	def __del__(self):
 		os.killpg(self.proc.pid, signal.SIGTERM)
 
+	def _message(self, method, *params):
+		msg = {"id": str(ObjectId()), "method": method, "params": list(params)}
+		return json.dumps(msg).encode()
+
 	def get_task_status(self):
-		self.socket.send(json.dumps({"id": str(ObjectId()), "method": "GsServer.GetTaskStatus", "params": [{"pid": self.proc.pid}]}).encode())
+		encoded_msg = self._message("GsServer.GetTaskStatus", {})
+		self.socket.send(encoded_msg)
 		chunk = self.socket.recv(2048)
-		print chunk
-		#output = subprocess.check_output("main -query='%s'" % (self.name), shell=True)
-		#print output
-		#return json.loads(output)
+		return chunk
 
 	def get_task_stdout(self):
-		pass
+		encoded_msg = self._message("GsServer.GetTaskStdLogPath", {})
+		self.socket.send(encoded_msg)
+		chunk = self.socket.recv(2048)
+		return chunk
 
 	def get_task_stderr(self):
 		pass

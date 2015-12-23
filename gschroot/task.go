@@ -51,7 +51,8 @@ func NewTask(url, cmd, name string) (t *Task, err error) {
 
     t.Url = url
     t.Cmd = cmd
-    t.StdoutPath = LOG_DIR + "/" + name
+    t.StdoutPath = LOG_DIR + "/" + name + ".out"
+    t.StderrPath = LOG_DIR + "/" + name + ".error"
     t.path = utils.CreateRandDest()
     t.Ts = new(TaskStatus)
     os.MkdirAll(t.path, 0755)
@@ -182,4 +183,11 @@ func QueryTask(processName string) (ts *TaskStatus, err error) {
 	ts = reply.Ts
 	//p := os.FindProcess(pid)
 	return
+}
+
+func GetStdLogPath(processName string) (reply LogPathReply, err error) {
+    args := &QueryArgs{}
+    call(SOCK_DIR + "/" + processName, "GsServer.GetTaskStdLogPath", args, &reply)
+    return
+
 }

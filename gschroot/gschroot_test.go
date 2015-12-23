@@ -94,6 +94,22 @@ func TestGoodCmd(t *testing.T) {
 			t.Error("TaskStatus should indicate task is done")
 		}
 
+		lp, err := GetStdLogPath(name)
+
+		if err != nil {
+			t.Error("Logpaths should be returned for a running/completed task", err)
+		}
+
+		if lp.StdoutPath != "/tmp/gschroot_logs/test.out" {
+			t.Error("Incorrect output path, should be:", "/tmp/gschroot_logs/test.out")
+			t.Error("Not", lp.StdoutPath)
+		}
+
+		if lp.StderrPath != "/tmp/gschroot_logs/test.error" {
+			t.Error("Incorrect error output path, should be:", "/tmp/gschroot_logs/test.error")
+			t.Error("Not", lp.StderrPath)
+		}
+
 		err = task.kill() //test signal interrupt
 		if err != nil {
 			t.Error("Kill function should work on running task")

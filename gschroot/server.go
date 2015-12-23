@@ -91,9 +91,19 @@ type QueryReply struct {
 	Ts *TaskStatus
 }
 
+type LogPathReply struct {
+	StdoutPath string
+	StderrPath string
+}
 
 func (gs *GsServer) GetTaskStatus(args *QueryArgs, rep *QueryReply) error {
 	rep.Msg = "here"
 	rep.Ts = gs.task.Ts
+	return nil
+}
+
+func (gs *GsServer) GetTaskStdLogPath(args *QueryArgs, rep *LogPathReply) error {
+	rep.StdoutPath = gs.task.StdoutPath
+	rep.StderrPath = gs.task.StderrPath
 	return nil
 }
